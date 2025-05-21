@@ -75,7 +75,7 @@
         <div class="boiler-box grid grid-cols-1 md:grid-cols-2 w-full gap-8 py-8">
             {% if dashboard.charts.exists %}
                 {% for chart,data in combined %}
-                    <div class="flex flex-col justify-start h-screen space-y-3 items-start border-2 border-blue-200 rounded-xl p-6 shadow-lg shadow-xl shadow-blue-300/50 overflow-y-auto">
+                    <div class="flex flex-col justify-start h-96 md:h-screen space-y-3 items-start border-2 border-blue-200 rounded-xl p-6 shadow-lg shadow-xl shadow-blue-300/50 overflow-y-auto">
                         <div class="top-column flex justify-between w-full">
                             <div class="dash-info-left order-1 flex flex-col flex-grow space-y-4">
                                 <div class="dash-title text-xl text-blue-600 font-bold">{{ chart.title }}</div>
