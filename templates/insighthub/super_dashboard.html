@@ -327,7 +327,7 @@
             const isPublic = toggleCheckbox.checked ? 'True' : 'False';
             const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            fetch('http://127.0.0.1:8000/api/create_dashboard/', {
+            fetch('/api/create_dashboard/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
