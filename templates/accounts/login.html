@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% block title %}InsightHub: Login{% endblock %}
+
+{% block header %}
+<header class="bg-white shadow-sm rounded-b-xl border-b border-blue-100 sticky top-0 z-10">
+    <div class="max-w-screen-4xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+        <a href="{% url 'index' %}" class="no-underline">
+            <span class="text-2xl font-bold text-blue-600 tracking-tight select-none">
+                Insight
+                <span class="bg-blue-700 text-white border border-blue-700 rounded-lg py-1 px-2 ml-0.5 inline-block">
+                    Hub
+                </span>
+            </span>
+        </a>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+    <div class="my-container max-w-screen-4xl p-6">
+        <div class="login-wrapper flex justify-center items-center">
+            <div class="bg-white rounded-2xl p-8 max-w-md w-full relative border border-blue-100 shadow-lg">
+                <h2 class="text-2xl font-bold mb-6 text-gray-900">Login</h2>
+                <div class="one-tap flex flex-col space-y-4 pb-6">
+                    <div class="cursor-pointer border-2 py-2 flex text-center justify-center items-center go google rounded-2xl font-semibold"> 
+                        <i class="fa-brands fa-google mr-2"></i>
+                            <form action="{% provider_login_url 'google' next=request.GET.next %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit">Continue with google</button>
+                            </form>
+                    </div>
+                    <div class="cursor-pointer border-2 py-2 flex text-center justify-center items-center go github rounded-2xl font-semibold bg-gray-900 text-white"> 
+                        <i class="fa-brands fa-github mr-2"></i>
+                            <form action="{% provider_login_url 'github' next=request.GET.next %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit">Continue with github</button>
+                            </form>
+                    </div>
+                </div>
+                <div class="promo-top flex flex-row items-center w-full">
+                    <span class="flex-grow border-t border-black mx-2"></span>
+                    <span class="whitespace-nowrap text-gray-700 font-semibold">Or continue with username</span>
+                    <span class="flex-grow border-t border-black mx-2"></span>
+                </div>
+
+                <form id="loginForm" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700">Username</label>
+                        <input
+                        id="username"
+                        type="text"
+                        required
+                        class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                        placeholder="Enter your username"
+                        />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700">Password</label>
+                        <input
+                        id="password"
+                        type="password"
+                        required
+                        class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                        placeholder="Enter your password"
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        class="w-full bg-blue-700 text-white rounded-lg px-4 py-2 hover:bg-blue-700 font-semibold"
+                    >
+                        Login
+                    </button>
+                </form>
+                <button
+                type="button"
+                class="w-full bg-gray-200 text-black rounded-lg px-4 py-2 hover:bg-white-700 font-semibold mt-[10px]"
+                onclick="redirect_func()"
+                >
+                Don't have an account ?
+                </button>
+                <div class="mt-4 text-sm text-gray-700 font-semibold">
+                    For testing: admin123 / admin123
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const dashboard = urlParams.get('dashboard');
+    const next= urlParams.get('next');
+    
+    function redirect_func(){
+        if (typeof dashboard !== 'undefined' && dashboard)
+         { var new_url='/register/?dashboard=' + dashboard +"&"+"next="+next;
+            window.location.href=new_url; } 
+        else { window.location.href='/register'; }
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("loginForm");
+        
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // Prepare the request payload
+            const data = {
+                username: username,
+                password: password,
+                dashboard: dashboard
+            };
+
+            // Send the data to the API using fetch
+            fetch('http://127.0.0.1:8000/api/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert(data.error); // Display error message
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+
+{% endblock %}

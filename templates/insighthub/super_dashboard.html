@@ -1,0 +1,376 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% block title %}Data Portal{% endblock %}
+
+{% block header %}
+<header class="bg-white shadow-sm rounded-b-xl border-b border-blue-100 sticky top-0 z-10">
+    <div class="max-w-screen-4xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+        <a href="{% url 'index' %}" class="no-underline">
+            <span class="text-2xl font-bold text-blue-600 tracking-tight select-none">
+                Insight
+                <span class="bg-blue-700 text-white border border-blue-700 rounded-lg py-1 px-2 ml-0.5 inline-block">
+                    Hub
+                </span>
+            </span>
+        </a>
+        <div class="flex items-center space-x-4">
+            <span class="text-blue-700 text-blue-600 font-semibold">{{ request.user.username }}</span>
+            <form action="{% url 'logout' %}" method="get">
+                <button type="submit" class="px-4 py-2 text-red-600 hover:text-red-700 font-semibold">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </form>
+        </div>    
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="my-container max-w-screen-4xl p-6">
+    <div class="my-button-contain flex flex-col justify-center text-center space-y-4">
+        <div class="header-container">
+            <div class="header font-bold text-4xl">Unlock Your <span class="text-blue-600">Business</span> Potential</div>
+        </div>
+        <div class="my-botton">
+            <button 
+                class="bg-blue-600 text-white px-4 font-semibold py-2 rounded-lg shadow hover:bg-blue-700 transition m-auto"
+                data-bs-toggle="modal" 
+                data-bs-target="#createDashboardModal"
+            >
+                Create Dashboard
+            </button>
+        </div>
+    </div>
+    <div class="my-dashboard-container">
+        <div class="boiler-box grid grid-cols-2 w-full gap-8 py-8">
+            {% if request.user.dashboards.exists %}
+                {% for dashboard in request.user.dashboards.all %}
+                    <div class="flex flex-col justify-start h-96 space-y-3 items-start border-2 border-blue-200 rounded-xl p-6 shadow-lg shadow-xl shadow-blue-300/50">
+                        <div class="top-column flex justify-between items-center w-full">
+                            <div class="dash-info-left order-1 flex-grow">
+                                <div class="dash-title text-xl text-blue-600 font-bold">{{ dashboard.title }}</div>
+                                <div class="dash-status text-sky-600">Status: {% if dashboard.is_public%} Public {%else%} Private {%endif%}</div>
+                            </div>
+                            <div class="dash-info-right order-2">
+                                <div class="function-group flex space-x-2">
+                                    <button 
+                                        class="dash-QR flex items-center cursor-pointer bg-blue-600 text-white text-sm font-semibold px-3 py-0.5 border-1 border-blue-600 rounded-lg"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#shareQRModal-{{ dashboard.id }}"
+                                    >
+                                        QR
+                                    </button>
+                                    <button 
+                                        class="dash-edit flex items-center cursor-pointer bg-amber-600 text-white text-sm font-semibold px-3 py-0.5 border-1 border-amber-600 rounded-lg"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editDashboardModal-{{ dashboard.id }}"
+                                        data-id="{{ dashboard.id }}"
+                                    >
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button 
+                                        class="dash-delete flex items-center cursor-pointer bg-red-600 text-white text-sm font-semibold px-3 py-0.5 border-1 border-red-600 rounded-lg"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#deleteDashboardModal-{{ dashboard.id }}"
+                                        data-id="{{ dashboard.id }}"
+                                    >
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="charts-info flex">
+                            <div class="charts-head mr-4 font-semibold">Charts:</div>
+                            <div class="charts-all flex space-x-3">
+                                {% for chart in dashboard.charts.all %}
+                                    <div class="chart bg-blue-100 border-1 border-blue-100 rounded-xl px-2">{{ chart.title }}</div>
+                                {% empty %}
+                                    <div class="text-gray-500">No charts available</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="description flex-grow overflow-hidden text-ellipsis line-clamp-3 text-slate-600">
+                            {% if dashboard.description %}{{dashboard.description}}{%endif%}
+                            
+                        </div>
+                        <div class="flex justify-between w-full">
+                            <div class="like-qtty flex space-x-2 items-center">
+                                <i class="fa-regular fa-thumbs-up"></i>
+                                <span class="italic font-semibold text-blue-600">{{ dashboard.number_of_likes }}</span>
+                            </div>
+                            <form action="/dashboard/{{ dashboard.id }}" method="get">
+                                <button type="submit" class="see-more cursor-pointer font-semibold text-blue-600 underline decoration-dashed">
+                                    Add Chart &gt;&gt;&gt;
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="shareQRModal-{{ dashboard.id }}" tabindex="-1" aria-labelledby="shareQRModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title font-semibold" id="shareQRModalLabel">Share via QR</h5>
+                                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="QR-container px-2 flex flex-column items-center justify-center space-y-4 mb-2">
+                                        <div class="QR-img w-64 h-64 flex justify-center items-center">
+                                            <img 
+                                                src="/media/qr_codes/dashboard_{{ dashboard.id }}.png" 
+                                                class="w-full h-full object-contain"
+                                                alt="QR code"
+                                            >
+                                        </div>
+                                        <div class="warn-msg text-slate-600 text-center">
+                                            Please do not share this QR, your data insights are shared through this !
+
+                                            <span><a href="/media/qr_codes/dashboard_{{ dashboard.id }}.png" download 
+                                            class="text-blue-600 underline hover:text-blue-800">
+                                            Click to download
+                                            </a></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="deleteDashboardModal-{{ dashboard.id }}" tabindex="-1" aria-labelledby="deleteDashboardModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div class="warn-contain flex flex-col space-y-4">
+                                        <div class="top-wrap flex">
+                                            <div class="ask text-xl font-semibold flex flex-grow">Are you sure?</div>
+                                            <button type="button" class="btn-close focus:shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="happen">You want to delete this dashboard?</div>
+                                    </div>
+                                    <div class="mt-6">
+                                        <form id="deleteDashboardForm-{{ dashboard.id }}" action="/delete_dashboard/{{ dashboard.id }}/" method="POST">
+                                            {% csrf_token %}
+                                            <!-- Hidden input to pass the dashboard ID -->
+                                            <input type="hidden" name="dashboard_id" value="{{ dashboard.id }}">
+                                            
+                                            <button
+                                                type="submit"
+                                                class="w-full py-2 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition"
+                                            >
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="editDashboardModal-{{ dashboard.id }}" tabindex="-1" aria-labelledby="editDashboardModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editDashboardModalLabel">Edit Dashboard</h5>
+                                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="editDashboardForm-{{ dashboard.id }}" method="POST" action="/update_dashboard/{{ dashboard.id }}/">
+                                        {% csrf_token %}
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700">Title<span class="text-red-600">*</span></label>
+                                            <input
+                                                name="title"
+                                                type="text"
+                                                required
+                                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                                placeholder="Enter dashboard title"
+                                                value={{ dashboard.title }}
+                                            />
+                                        </div>
+                                        <div class="mt-4">
+                                            <label class="block text-sm font-semibold text-gray-700">Description</label>
+                                            <textarea
+                                                name="description"
+                                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                                placeholder="Enter dashboard description"
+                                            >{% if dashboard.description %}{{dashboard.description}}{%endif%}</textarea>
+                                        </div>
+                                        <div class="mt-4 flex items-center space-x-3 edit-info" id="{{ dashboard.id }}">
+                                            <div class="mt-4 flex items-center space-x-3 edit-info" id="{{ dashboard.id }}">
+                                                <label class="text-sm font-semibold text-gray-700">
+                                                    <input
+                                                        type="radio"
+                                                        name="is_public"
+                                                        value="True"
+                                                        {% if dashboard.is_public %}checked{% endif %}
+                                                    />
+                                                    Public
+                                                </label>
+
+                                                <label class="text-sm font-semibold text-gray-700">
+                                                    <input
+                                                        type="radio"
+                                                        name="is_public"
+                                                        value="False"
+                                                        {% if not dashboard.is_public %}checked{% endif %}
+                                                    />
+                                                    Private
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="mt-6">
+                                            <button
+                                                type="submit"
+                                                class="w-full py-2 px-4 bg-amber-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                                            >
+                                                Update Dashboard
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No dashboards available.</p>
+                {% endfor %}
+            {% else %}
+                <p>No dashboards found.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="modal fade" id="createDashboardModal" tabindex="-1" aria-labelledby="createDashboardModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createDashboardModalLabel">Create Dashboard</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createDashboardForm" method="POST">
+                        {% csrf_token %}
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">Title<span class="text-red-600">*</span></label>
+                            <input
+                                id="title"
+                                type="text"
+                                required
+                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                placeholder="Enter dashboard title"
+                            />
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-sm font-semibold text-gray-700">Description</label>
+                            <textarea
+                                id="description"
+                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                placeholder="Enter dashboard description"
+                            ></textarea>
+                        </div>
+                        <div class="mt-4 flex items-center space-x-3 create-info">
+                            <label class="text-sm font-semibold text-gray-700">Public<span class="text-red-600">*</span></label>
+                            <input
+                                type="checkbox"
+                                id="is_public_create"
+                                class="create-toggle-checkbox hidden"
+                                data-toggle="true"
+                                checked
+                            />
+                            <label
+                                for="is_public_create"
+                                class="create-toggle-label block w-10 h-5 bg-green-600 rounded-full cursor-pointer"
+                            >
+                                <span
+                                    class="create-toggle-ball block w-5 h-5 bg-white rounded-full shadow transform transition-all duration-300"
+                                    style="transform: translateX(100%);"
+                                ></span>
+                            </label>
+                        </div>
+                        <div class="mt-6">
+                            <button
+                                type="submit"
+                                class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                            >
+                                Create Dashboard
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const toggleCheckbox = document.querySelector('#is_public_create');
+        const toggleBall = document.querySelector('.create-toggle-ball');
+        const toggleLabel = document.querySelector('.create-toggle-label');
+
+        toggleCheckbox.addEventListener('change', function() {
+            if (toggleCheckbox.checked) {
+                toggleBall.style.transform = 'translateX(100%)';
+                toggleLabel.classList.add('bg-green-600');
+                toggleLabel.classList.remove('bg-gray-300');
+            } else {
+                toggleBall.style.transform = 'translateX(0)';
+                toggleLabel.classList.add('bg-gray-300');
+                toggleLabel.classList.remove('bg-green-600');
+            }
+        });
+
+        document.getElementById('createDashboardForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const isPublic = toggleCheckbox.checked ? 'True' : 'False';
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch('http://127.0.0.1:8000/api/create_dashboard/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({
+                    title: title,
+                    description: description,
+                    is_public: isPublic,
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success){
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Error creating dashboard.');
+            });
+        });
+
+        function deleteDashboard(dashboardId) {
+            // Handle the delete request for this dashboard ID
+            fetch(`/dashboard/delete/${dashboardId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token // Pass CSRF token here if necessary
+                },
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Dashboard deleted successfully');
+                    // Optionally, you can remove the dashboard from the UI here
+                }
+            });
+        }
+
+    });
+</script>
+
+{% endblock %}

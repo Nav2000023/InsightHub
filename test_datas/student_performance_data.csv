@@ -1,0 +1,7 @@
+Student ID,Name,Math Score,Science Score,Pass
+S001,Alice,85,90,TRUE
+S002,Bob,78,82,TRUE
+S003,Charlie,92,89,TRUE
+S004,David,88,85,TRUE
+S005,Eve,76,80,TRUE
+S005,Eve,76,80,FALSE

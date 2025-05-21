@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% block title %}Landing page{% endblock %}
+
+{% block header %}
+<header class="bg-white shadow-sm rounded-b-xl border-b border-blue-100 sticky top-0 z-10">
+    <div class="max-w-screen-4xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+        <a href="{% url 'index' %}" class="no-underline">
+            <span class="text-2xl font-bold text-blue-600 tracking-tight select-none">
+                Insight
+                <span class="bg-blue-700 text-white border border-blue-700 rounded-lg py-1 px-2 ml-0.5 inline-block">
+                    Hub
+                </span>
+            </span>
+        </a>
+        <div class="flex items-center space-x-4">
+            <form action="{% url 'login' %}" method="get">
+                <button type="submit" class="px-4 py-2 text-blue-600 hover:text-blue-700 font-semibold">
+                Login
+                </button>
+            </form>
+            <form action="{% url 'register' %}" method="get">
+                <button type="submit" class="px-4 py-2 border rounded-xl border-blue-600 bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+                    Sign Up
+                </button>
+            </form>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="my-container max-w-screen-4xl">
+    <div class="first-wrapper p-6">
+        <div class="group flex space-x-4">
+            <div class="left order-1 w-1/2 space-y-4 px-4">
+                <div class="bulletin p-2 border-2 border-gray-900 rounded-r-xl rounded-bl-xl underline mt-7 inline-block">
+                    Grow Your Business
+                </div>
+                <div class="header-container">
+                    <div class="header font-bold text-4xl">Transform Your Data into</div>
+                    <div class="header font-bold text-blue-600 text-4xl">Compelling Visual Stories</div>
+                </div>
+                <div class="description">
+                    Upload CSV files, create interactive dashboards, and share insights with your audience using QR codes.
+                </div>
+                <form action="{% url 'register' %}" method="get">
+                    <button type="submit" class="free-access inline-block border-0 hover:scale-110 duration-400 bg-blue-600 text-white py-2 px-4 rounded-2xl cursor-pointer hover:bg-blue-700">
+                        Free Trial
+                    </button>
+                </form>
+            </div>
+            <div class="right order-2 w-1/2"></div>
+        </div>
+    </div>
+    <div class="second-wrapper bg-white p-6">
+        <div class="business-group">
+            <div class="business-adapt flex flex-col justify-center items-center">
+                <div class="head-business font-bold text-4xl text-center">Business That Adapted Our Software</div>
+                <div class="boiler-box grid grid-cols-3 gap-6 py-8">
+                    <div class="business w-80 h-48 flex flex-col justify-center items-center text-center border-2 border-blue-200 rounded-xl p-2">
+                        <div class="title text-2xl font-semibold mb-2">AirBnB</div>
+                        <div class="description">Our patner since 2010, Every quarter they elevated their growth and sales funnel with the insights they got over their data using our software, someone behind their low churn rate is just "INSIGHT HUB"</div>
+                    </div>
+                    <div class="business w-80 h-48 flex flex-col justify-center items-center text-center border-2 border-blue-200 rounded-xl p-2">
+                        <div class="title text-2xl font-semibold mb-2">Booking.com</div>
+                        <div class="description">
+                            Partnering since 2015, Booking.com boosted growth and customer retention with our robust data-driven insights from "INSIGHT HUB".
+                        </div>
+                    </div>
+                    <div class="business w-80 h-48 flex flex-col justify-center items-center text-center border-2 border-blue-200 rounded-xl p-2">
+                        <div class="title text-2xl font-semibold mb-2">Flipkart</div>
+                        <div class="description">
+                            Since 2012, Flipkart has scaled rapidly and reduced churn, thanks to powerful insights from 'INSIGHT HUB'.
+                        </div>
+                    </div>
+                    <div class="business w-80 h-48 flex flex-col justify-center items-center text-center border-2 border-blue-200 rounded-xl p-2">
+                        <div class="title text-2xl font-semibold mb-2">OYO</div>
+                        <div class="description">
+                            OYO, our partner since 2014, leverages 'INSIGHT HUB' to drive growth and cut churn with actionable insights.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+            <h2 class="font-bold text-4xl text-center text-gray-900">
+                Key Features
+            </h2>
+            </div>
+
+            <div class="mt-20 grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div class="text-center">
+                <div class="flex justify-center">
+                <i class="fas fa-upload text-4xl text-blue-600"></i>
+                </div>
+                <h3 class="mt-4 text-xl font-medium text-gray-900">Data Upload</h3>
+                <p class="mt-2 text-gray-500">
+                Easily upload your CSV files and start visualizing data without complex setup
+                </p>
+            </div>
+
+            <div class="text-center">
+                <div class="flex justify-center">
+                <i class="fas fa-chart-line text-4xl text-blue-600"></i>
+                </div>
+                <h3 class="mt-4 text-xl font-medium text-gray-900">Dashboard Creation</h3>
+                <p class="mt-2 text-gray-500">
+                Create beautiful dashboards with multiple charts and descriptive insights
+                </p>
+            </div>
+
+            <div class="text-center">
+                <div class="flex justify-center">
+                <i class="fas fa-qrcode text-4xl text-blue-600"></i>
+                </div>
+                <h3 class="mt-4 text-xl font-medium text-gray-900">QR Code Sharing</h3>
+                <p class="mt-2 text-gray-500">
+                Generate QR codes for your dashboards and share them easily with others
+                </p>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

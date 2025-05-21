@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+
+{% block title %}Signup{% endblock %}
+
+{% block header %}
+<header class="bg-white shadow-sm rounded-b-xl border-b border-blue-100 sticky top-0 z-10">
+    <div class="max-w-screen-4xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+        <a href="{% url 'index' %}" class="no-underline">
+            <span class="text-2xl font-bold text-blue-600 tracking-tight select-none">
+                Insight
+                <span class="bg-blue-700 text-white border border-blue-700 rounded-lg py-1 px-2 ml-0.5 inline-block">
+                    Hub
+                </span>
+            </span>
+        </a>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+    <div class="my-container max-w-screen-4xl p-6">
+        <div class="login-wrapper flex justify-center items-center">
+            <div class="bg-white rounded-2xl p-8 m-2 w-full relative border border-blue-100 shadow-lg flex flex-col">
+                <h2 class="text-2xl font-bold mb-6 text-gray-900">Signup</h2>
+                <div class="one-tap flex flex-row space-x-6 pb-6 w-full justify-center">
+                    <div class="cursor-pointer border-2 py-2 flex text-center justify-center items-center go google rounded-2xl font-semibold max-w-sm w-full">
+                        <i class="fa-brands fa-google mr-2"></i> 
+                            <form action="{% provider_login_url 'google' next=request.GET.next %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit">Continue with google</button>
+                            </form>
+                    </div>
+                    <div class="cursor-pointer border-2 py-2 flex text-center justify-center items-center go github rounded-2xl font-semibold bg-gray-900 text-white max-w-sm w-full">
+                        <i class="fa-brands fa-github mr-2"></i> 
+                            <form action="{% provider_login_url 'github' next=request.GET.next %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit">Continue with github</button>
+                            </form>                        
+                    </div>
+                </div>
+                <div class="promo-top flex flex-row items-center w-full">
+                    <span class="flex-grow border-t border-black mx-2"></span>
+                    <span class="whitespace-nowrap text-gray-700 font-semibold">Or fill up the data to register</span>
+                    <span class="flex-grow border-t border-black mx-2"></span>
+                </div>
+
+                <form id="registration-form" class="space-y-4 mt-4">
+                    {% csrf_token %}
+                    <div class="flex space-x-6">
+                        <div class="w-1/2">
+                            <label class="block text-sm font-semibold text-gray-700">First Name<span class="text-red-600">*</span></label>
+                            <input
+                                name="fname"
+                                id="fname"
+                                type="text"
+                                required
+                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                placeholder="Enter your first name"
+                            />
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-sm font-semibold text-gray-700">Last Name<span class="text-red-600">*</span></label>
+                            <input
+                                name="lname"
+                                id="lname"
+                                type="text"
+                                required
+                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                placeholder="Enter your last name"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700">Email</label>
+                        <input
+                            name="email"
+                            id="email"
+                            type="email"
+                            required
+                            class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                            placeholder="Enter your email"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700">Username<span class="text-red-600">*</span></label>
+                        <input
+                            name="username"
+                            id="username"
+                            type="text"
+                            required
+                            class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                            placeholder="Choose a username"
+                        />
+                        <span class="error-msg text-red-600 text-sm"></span>
+                    </div>
+
+                    <div class="flex space-x-6">
+                        <div class="w-1/2 set-pw">
+                            <label class="block text-sm font-semibold text-gray-700">Password<span class="text-red-600">*</span></label>
+                            <input
+                                name="password"
+                                id="password"
+                                type="password"
+                                required
+                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                placeholder="Create a password"
+                            />
+                            <span id="password-error" class="error-msg text-red-600 text-sm"></span>
+                        </div>
+                        <div class="w-1/2 confirm-pw">
+                            <label class="block text-sm font-semibold text-gray-700">Confirm Password<span class="text-red-600">*</span></label>
+                            <input
+                                id="confirm-password"
+                                name="confirm_password"
+                                id="confirm_password"
+                                type="password"
+                                required
+                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                placeholder="Re-enter your password"
+                            />
+                            <span id="confirm-password-error" class="error-msg text-red-600 text-sm"></span>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <button
+                            type="submit"
+                            class="max-w-sm w-full bg-blue-700 text-white rounded-lg px-4 py-2 hover:bg-blue-700 font-semibold"
+                        >
+                            Signup
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const dashboard = urlParams.get('dashboard');
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("registration-form");
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirm-password');
+            const passwordError = document.getElementById('password-error');
+            const confirmPasswordError = document.getElementById('confirm-password-error');
+
+            // Event listener for the password field
+            passwordInput.addEventListener('input', function() {
+                // If confirm password is filled before password, clear confirm password input and show message
+                if (confirmPasswordInput.value && confirmPasswordInput.value !== passwordInput.value) {
+                    confirmPasswordInput.value = '';
+                    confirmPasswordError.textContent = 'Enter password before confirming';
+                    confirmPasswordInput.classList.remove('focus:ring-blue-400', 'focus:border-blue-400');
+                    confirmPasswordInput.classList.add('border-red-400');
+                } else {
+                    // Check if password and confirm password match
+                    if (confirmPasswordInput.value && confirmPasswordInput.value !== passwordInput.value) {
+                        confirmPasswordInput.classList.remove('focus:ring-blue-400', 'focus:border-blue-400');
+                        confirmPasswordInput.classList.add('border-red-400');
+                        confirmPasswordError.textContent = 'Passwords do not match';
+                    } else {
+                        confirmPasswordInput.classList.remove('border-red-400');
+                        confirmPasswordInput.classList.add('focus:ring-blue-400', 'focus:border-blue-400');
+                        confirmPasswordError.textContent = '';
+                    }
+                }
+
+                // Clear the error message for password if it is valid
+                if (passwordInput.value) {
+                    passwordError.textContent = '';
+                }
+            });
+
+            // Event listener for the confirm password field
+            confirmPasswordInput.addEventListener('input', function() {
+                // If confirm password is filled before password, show error and clear the field
+                if (confirmPasswordInput.value && !passwordInput.value) {
+                    confirmPasswordInput.value = '';
+                    confirmPasswordError.textContent = 'Enter password before confirming';
+                    confirmPasswordInput.classList.remove('focus:ring-blue-400', 'focus:border-blue-400');
+                    confirmPasswordInput.classList.add('border-red-400');
+                } else {
+                    // Check if password and confirm password match
+                    if (confirmPasswordInput.value !== passwordInput.value) {
+                        confirmPasswordInput.classList.remove('focus:ring-blue-400', 'focus:border-blue-400');
+                        confirmPasswordInput.classList.add('border-red-400');
+                        confirmPasswordError.textContent = 'Passwords do not match';
+                    } else {
+                        confirmPasswordInput.classList.remove('border-red-400');
+                        confirmPasswordInput.classList.add('focus:ring-blue-400', 'focus:border-blue-400');
+                        confirmPasswordError.textContent = '';
+                    }
+                }
+            });
+
+            form.addEventListener("submit", function(event) {
+                event.preventDefault();
+                const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+                const fname = document.getElementById("fname").value;
+                const lname = document.getElementById("lname").value;
+                const email = document.getElementById("email").value;
+                const username = document.getElementById("username").value;
+                const password = document.getElementById("password").value;
+
+                // Prepare the request payload
+                const data = {
+                    fname: fname,
+                    lname: lname,
+                    email: email,
+                    username: username,
+                    password: password,
+                    dashboard:dashboard
+                };
+
+                // Send the data to the API using fetch
+                fetch('http://127.0.0.1:8000/api/register/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        alert(data.error); // Display error message
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+
+        });
+    </script>
+{% endblock %}

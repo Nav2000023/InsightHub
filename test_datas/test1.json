@@ -1,0 +1,431 @@
+{
+    "columns": {
+        "Name": {
+            "type": "object",
+            "num_unique": 79,
+            "sample_values": [
+                "Alice Smith",
+                "Bob Johnson",
+                "Charlie Brown",
+                "Diana Lee",
+                "Ethan Williams"
+            ]
+        },
+        "Age": {
+            "type": "int64",
+            "num_unique": 15,
+            "sample_values": [
+                22,
+                28,
+                19,
+                25,
+                31
+            ],
+            "min": 18.0,
+            "max": 32.0,
+            "mean": 24.7625
+        },
+        "Score": {
+            "type": "float64",
+            "num_unique": 73,
+            "sample_values": [
+                85.5,
+                78.2,
+                92.1,
+                65.8,
+                88.9
+            ],
+            "min": 65.8,
+            "max": 95.3,
+            "mean": 80.66375000000001
+        },
+        "Enrollment Date": {
+            "type": "datetime",
+            "num_unique": 75,
+            "sample_values": [
+                "2023-08-15",
+                "2022-11-20",
+                "2024-03-01",
+                "2023-05-10",
+                "2022-09-01"
+            ]
+        },
+        "Category": {
+            "type": "object",
+            "num_unique": 3,
+            "sample_values": [
+                "Group A",
+                "Group B",
+                "Group C"
+            ]
+        },
+        "Timestamp": {
+            "type": "datetime",
+            "num_unique": 80,
+            "sample_values": [
+                "2024-01-10 10:30:00",
+                "2024-01-10 10:35:15",
+                "2024-01-10 10:40:30",
+                "2024-01-10 10:45:45",
+                "2024-01-10 10:50:00"
+            ]
+        },
+        "Duration(seconds)": {
+            "type": "int64",
+            "num_unique": 64,
+            "sample_values": [
+                120,
+                60,
+                180,
+                90,
+                150
+            ],
+            "min": 60.0,
+            "max": 205.0,
+            "mean": 119.55
+        },
+        "Event Type": {
+            "type": "object",
+            "num_unique": 5,
+            "sample_values": [
+                "Login",
+                "View Profile",
+                "Submit Form",
+                "Logout",
+                "View Details"
+            ]
+        },
+        "Salary": {
+            "type": "int64",
+            "num_unique": 67,
+            "sample_values": [
+                50000,
+                60000,
+                45000,
+                55000,
+                70000
+            ],
+            "min": 45000.0,
+            "max": 72500.0,
+            "mean": 56921.25
+        },
+        "IsActive": {
+            "type": "bool",
+            "num_unique": 2,
+            "sample_values": [
+                true,
+                false
+            ],
+            "min": 0.0,
+            "max": 1.0,
+            "mean": 0.6875
+        }
+    },
+    "suggested_charts": [
+        {
+            "x": "Name",
+            "y": "Age",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Name",
+            "y": "Score",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Name",
+            "y": "Duration(seconds)",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Name",
+            "y": "Salary",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Name",
+            "y": "IsActive",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Enrollment Date",
+            "y": "Age",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Enrollment Date",
+            "y": "Score",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Enrollment Date",
+            "y": "Duration(seconds)",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Enrollment Date",
+            "y": "Salary",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Enrollment Date",
+            "y": "IsActive",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Category",
+            "y": "Age",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Category",
+            "y": "Score",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Category",
+            "y": "Duration(seconds)",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Category",
+            "y": "Salary",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Category",
+            "y": "IsActive",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Timestamp",
+            "y": "Age",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Timestamp",
+            "y": "Score",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Timestamp",
+            "y": "Duration(seconds)",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Timestamp",
+            "y": "Salary",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Timestamp",
+            "y": "IsActive",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Event Type",
+            "y": "Age",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Event Type",
+            "y": "Score",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Event Type",
+            "y": "Duration(seconds)",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Event Type",
+            "y": "Salary",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Event Type",
+            "y": "IsActive",
+            "type": [
+                "bar",
+                "box",
+                "violin"
+            ]
+        },
+        {
+            "x": "Age",
+            "y": "Score",
+            "type": [
+                "scatter",
+                "line"
+            ]
+        },
+        {
+            "x": "Age",
+            "y": "Duration(seconds)",
+            "type": [
+                "scatter",
+                "line"
+            ]
+        },
+        {
+            "x": "Age",
+            "y": "Salary",
+            "type": [
+                "scatter",
+                "line"
+            ]
+        },
+        {
+            "x": "Age",
+            "y": "IsActive",
+            "type": [
+                "scatter",
+                "line"
+            ]
+        },
+        {
+            "x": "Score",
+            "y": "Duration(seconds)",
+            "type": [
+                "scatter",
+                "line"
+            ]
+        },
+        {
+            "x": "Score",
+            "y": "Salary",
+            "type": [
+                "scatter",
+                "line"
+            ]
+        },
+        {
+            "x": "Score",
+            "y": "IsActive",
+            "type": [
+                "scatter",
+                "line"
+            ]
+        },
+        {
+            "x": "Duration(seconds)",
+            "y": "Salary",
+            "type": [
+                "scatter",
+                "line"
+            ]
+        },
+        {
+            "x": "Duration(seconds)",
+            "y": "IsActive",
+            "type": [
+                "scatter",
+                "line"
+            ]
+        },
+        {
+            "x": "Salary",
+            "y": "IsActive",
+            "type": [
+                "scatter",
+                "line"
+            ]
+        }
+    ]
+}

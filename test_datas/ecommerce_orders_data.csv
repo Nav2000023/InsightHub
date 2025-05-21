@@ -1,0 +1,6 @@
+Order ID,Customer,Amount ($),Date,Shipped
+101,John,250.0,2024-01-15,True
+102,Jane,180.5,2024-01-17,False
+103,Ali,320.0,2024-01-20,True
+104,Priya,150.75,2024-01-21,True
+105,Liam,400.2,2024-01-25,False

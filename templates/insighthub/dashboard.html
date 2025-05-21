@@ -1,0 +1,518 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% block title %}dynamically title here{% endblock %}
+
+{% block header %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<header class="bg-white shadow-sm rounded-b-xl border-b border-blue-100 sticky top-0 z-10">
+    <div class="max-w-screen-4xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+        <a href="{% url 'index' %}" class="no-underline">
+            <span class="text-2xl font-bold text-blue-600 tracking-tight select-none">
+                Insight
+                <span class="bg-blue-700 text-white border border-blue-700 rounded-lg py-1 px-2 ml-0.5 inline-block">
+                    Hub
+                </span>
+            </span>
+        </a>
+        {% if request.user.is_authenticated %}
+            <div class="flex items-center space-x-4">
+                <span class="text-blue-700 text-blue-600 font-semibold">{{ request.user.username }}</span>
+                <form action="{% url 'logout' %}" method="get">
+                    <button type="submit" class="px-4 py-2 text-red-600 hover:text-red-700 font-semibold">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </form>
+            </div> 
+        {% else %}
+            <div class="flex items-center space-x-4">
+                <form action="{% url 'login' %}" method="get">
+                    <button type="submit" class="px-4 py-2 text-blue-600 hover:text-blue-700 font-semibold">
+                    Login
+                    </button>
+                </form>
+                <form action="{% url 'register' %}" method="get">
+                    <button type="submit" class="px-4 py-2 border rounded-xl border-blue-600 bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+                        Sign Up
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="my-container max-w-screen-4xl p-6">
+    <div class="my-button-contain flex flex-col justify-center text-center space-y-4">
+        <div class="header-container relative">
+            <div class="header font-bold text-4xl">Dashboard: <span class="text-blue-600">{{ dashboard.title }}</span></div>
+            <div class="like-info absolute right-10 top-50 bg-blue-100 border-1 border-blue-100 rounded-xl px-2">
+                {% if request.user.is_authenticated %}
+                    <button id="like-button">
+                        <i class="{% if is_liked %}fa-solid{% else %}fa-regular{% endif %} fa-thumbs-up like-logo"></i> 
+                    </button>
+                {% else %}
+                    <button id="like-button">
+                        <i class="fa-regular fa-thumbs-up like-logo"></i> 
+                    </button>
+                {% endif %}
+                <span id="likes-count" >{{ dashboard.number_of_likes }} </span>
+            </div>
+        </div>
+        {% if request.user == dashboard.user%}
+            <div class="my-botton">
+                <button 
+                    class="bg-blue-600 text-white px-4 font-semibold py-2 rounded-lg shadow hover:bg-blue-700 transition"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#createChartModal"
+                >
+                    Create Chart
+                </button>
+            </div>
+        {% endif %}
+    </div>
+    <div class="my-dashboard-container">
+        <div class="boiler-box grid grid-cols-2 w-full gap-8 py-8">
+            {% if dashboard.charts.exists %}
+                {% for chart,data in combined %}
+                    <div class="flex flex-col justify-start h-screen space-y-3 items-start border-2 border-blue-200 rounded-xl p-6 shadow-lg shadow-xl shadow-blue-300/50 overflow-y-auto">
+                        <div class="top-column flex justify-between w-full">
+                            <div class="dash-info-left order-1 flex flex-col flex-grow space-y-4">
+                                <div class="dash-title text-xl text-blue-600 font-bold">{{ chart.title }}</div>
+                            </div>
+                            <div class="dash-info-right order-2">
+                                {% if request.user == dashboard.user%}
+                                    <div class="function-group flex space-x-2 items-top">
+                                        <button 
+                                            class="dash-edit flex items-center cursor-pointer bg-amber-600 text-white text-sm font-semibold px-3 py-1 border-1 border-amber-600 rounded-lg"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editChartModal-{{ chart.id }}"
+                                            data-id="{{ chart.id }}"
+                                        >
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button 
+                                            class="dash-delete flex items-center cursor-pointer bg-red-600 text-white text-sm font-semibold px-3 py-1 border-1 border-red-600 rounded-lg"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteChartModal-{{ chart.id }}"
+                                            data-id="{{ chart.id }}"
+                                        >
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="charts-all flex space-x-3">
+                            <div class="chart bg-blue-100 border-1 border-blue-100 rounded-xl px-2">{{ chart.chart_type }}</div>
+                        </div>
+<div class="chart-container flex w-5/6 justify-center">
+      <canvas id="chart{{ forloop.counter }}"></canvas>
+      <script>
+        const ctx{{ forloop.counter }} = document.getElementById("chart{{ forloop.counter }}").getContext("2d");
+        new Chart(ctx{{ forloop.counter }}, {
+          type: "{{ data.data.type  }}",
+          data: {
+            labels: {{ data.data.labels|safe  }},
+            datasets: [{
+              label: "{{ data.data.column }}",
+              data: {{ data.data.data|safe }},
+              backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)'
+              ],
+              borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: false,
+                text: "{{ chart.title }}"
+              }
+            }
+          }
+        });
+      </script>
+    </div>
+                <div class="chart-describe overflow-hidden text-ellipsis line-clamp-3 text-sky-600">{% if chart.description %}{{chart.description}}{%endif%}</div>
+                    </div>
+                    {% if request.user == dashboard.user%}
+                        <div class="modal fade" id="deleteChartModal-{{ chart.id }}" tabindex="-1" aria-labelledby="deleteChartModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-sm">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div class="warn-contain flex flex-col space-y-4">
+                                            <div class="top-wrap flex">
+                                                <div class="ask text-xl font-semibold flex flex-grow">Are you sure?</div>
+                                                <button type="button" class="btn-close focus:shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="happen">You want to delete this chart?</div>
+                                        </div>
+                                        <div class="mt-6">
+                                            
+                                            <form id="deleteChartForm-{{ chart.id }}" action="/delete_chart/{{ chart.id }}/" method="POST">
+                                                {% csrf_token %}
+                                                <!-- Hidden input to pass the dashboard ID -->
+                                                <input type="hidden" name="dashboard_id" value="{{ dashboard.id }}">
+                                                
+                                                <button
+                                                    type="submit"
+                                                    class="w-full py-2 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="editChartModal-{{ chart.id }}" tabindex="-1" aria-labelledby="editChartModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editChartModalLabel">Edit Chart</h5>
+                                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="edit-form" id="editDashboardForm-{{ chart.id }}" method="POST" action="/update_chart/{{ dashboard.id }}/">
+                                            {% csrf_token %}
+
+                                            <!-- Hidden input for chart_id -->
+                                            <input type="hidden" name="chart_id" value="{{ chart.id }}">
+                                            <!-- Chart Type Selection -->
+                                            <div class="mb-4">
+                                                <label for="chartType{{ chart.id }}" class="update-chart-type block text-sm font-semibold text-gray-700">Chart Type<span class="text-red-600">*</span></label>
+                                                <select
+                                                    id="update-chartType"
+                                                    name="chart_type"
+                                                    class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                                    required
+                                                >
+                                                    <option value="">Select Chart Type</option>
+                                                    <!-- Check chart.chart_type and select the correct option -->
+                                                    <option value="pie" {% if chart.chart_type == "pie" %}selected{% endif %}>Pie Chart</option>
+                                                    <option value="bar" {% if chart.chart_type == "bar" %}selected{% endif %}>Bar Chart</option>
+                                                    <option value="scatter" {% if chart.chart_type == "scatter" %}selected{% endif %}>Scatter Chart</option>
+                                                    <option value="line" {% if chart.chart_type == "line" %}selected{% endif %}>Line Chart</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Column Selections -->
+                                            <div id="xCol" class="mb-4">
+                                                <label for="xCol" class="block text-sm font-semibold text-gray-700">Select X Column<span class="text-red-600">*</span></label>
+                                                <select name="x_column" id="xCol" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400" required>
+                                                    <option value="">Select Chart Type</option>
+                                                    {%for i in chart.get_chart_options.all %}
+                                                        <option value="{{i}}" {% if chart.x_column == i %}selected{% endif %}>{{i}}</option>
+                                                    {%endfor%}
+                                                </select>
+                                            </div>
+
+                                            <div id="yCol" class="mb-4 grid grid-cols-2 gap-6">
+                                                <div class="y-wrapper">
+                                                    <label for="yCol" class="block text-sm font-semibold text-gray-700">Select Y Column<span class="text-slate-400 italic text-semibold text-sm"> ( For Relational Analysis )</span></label>
+                                                    <select name="y_column" id="yCol" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400">
+                                                        <option value="" {% if chart.y_column is not defined or chart.y_column == "" %} selected {% endif %}>Default: Count</option>
+                                                        {%for i in chart.get_chart_options.numeric %}
+                                                            <option value="{{i}}" {% if chart.y_column %}{% if chart.y_column == i %}selected {%endif%} {% endif %}>{{i}}</option>
+                                                        {%endfor%}
+                                                    </select>
+                                                </div>
+                                                <div class="opt-wrapper">
+                                                    <label for="operation" class="block text-sm font-semibold text-gray-700">Demonstrate: <span class="text-slate-400 italic text-semibold text-sm"> ( For Relational Analysis )</span></label>
+                                                    <select name="operation" id="operation" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400">
+                                                        <option value="">Select Operation</option>
+                                                        <option value="sum" {% if chart.operation == "sum" %}selected{% endif %}>Sum</option>
+                                                        <option value="avg" {% if chart.operation == "avg" %}selected{% endif %}>Average</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <!-- Title and Description -->
+                                            <div class="mb-4">
+                                                <label for="title" class="block text-sm font-semibold text-gray-700">Title<span class="text-red-600">*</span></label>
+                                                <input
+                                                    id="title"
+                                                    name="title"
+                                                    type="text"
+                                                    required
+                                                    class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                                    placeholder="Enter chart title"
+                                                    value={{ chart.title }}
+                                                />
+                                            </div>
+
+                                            <div class="mb-4">
+                                                <label for="description" class="block text-sm font-semibold text-gray-700">Description</label>
+                                                <textarea
+                                                    name="description"
+                                                    id="description"
+                                                    class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                                    placeholder="Enter chart description"
+                                                >{% if chart.description %}{{chart.description}}{%endif%}</textarea>
+                                            </div>
+
+                                            <!-- Submit Button -->
+                                            <div class="mt-6">
+                                                <button
+                                                    type="submit"
+                                                    class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                                                >
+                                                    Update Chart
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <p>No charts available.</p>
+                {% endfor %}
+            {% else %}
+                <p>No charts found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal for Create Chart -->
+    <div class="modal fade" id="createChartModal" tabindex="-1" aria-labelledby="createChartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createChartModalLabel">Create Chart</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createChartForm" method="POST" action="/create_chart/{{ dashboard.id }}/" enctype="multipart/form-data" >
+                        {% csrf_token %}
+                        <!-- File Upload -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700">Upload CSV File<span class="text-red-600">*</span></label>
+                            <input
+                                type="file"
+                                id="csvFile"
+                                name="main_file"
+                                accept=".csv"
+                                required
+                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                            />
+                            <div id="fileErrorMessage" class="text-red-600 mt-2" style="display: none;">Please upload a valid CSV file.</div>
+                        </div>
+
+                        <!-- Chart Type Selection -->
+                        <div class="mb-4">
+                            <label for="chartType" class="block text-sm font-semibold text-gray-700">Chart Type<span class="text-red-600">*</span></label>
+                            <select
+                                id="chartType" name="chart_type"
+                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                required
+                            >
+                                <option value="">Select Chart Type</option>
+                                <!-- Display chart options with value format 1D-PieChart, 1D-BarChart, etc. -->
+                                <option value="pie">Pie Chart</option>
+                                <option value="bar">Bar Chart</option>
+                                <option value="scatter">Scatter Chart</option>
+                                <option value="line">Line Chart</option>
+                            </select>
+                        </div>
+
+                        <!-- Column Selections -->
+                        <div id="xColumnDiv" class="mb-4" style="display: none;">
+                            <label for="xColumn" class="block text-sm font-semibold text-gray-700">Select X Column<span class="text-red-600">*</span></label>
+                            <select id="xColumn" name="x_column" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400" required>
+                                <option value="">No Options: Upload CSV</option>
+                            </select>
+                        </div>
+
+                        <div id="yColumnDiv" class="mb-4" style="display: none;">
+                            <div class="flex space-x-6">
+                                <div class="y-wrapper">
+                                    <label for="yColumn" class="block text-sm font-semibold text-gray-700">Select Y Column<span class="text-slate-400 italic text-semibold text-sm"> ( For Relational Analysis )</span></label>
+                                    <select id="yColumn" name="y_column" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400">
+                                        <option value="">No Options: Upload CSV</option>
+                                    </select>
+                                </div>
+                                <div class="opt-wrapper">
+                                    <label for="operation" class="block text-sm font-semibold text-gray-700">Demonstrate: <span class="text-slate-400 italic text-semibold text-sm"> ( For Relational Analysis )</span></label>
+                                    <select name="operation" id="operation" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400">
+                                        <option value="">Select Operation</option>
+                                        <option value="sum" selected >Sum</option>
+                                        <option value="avg" selected >Average</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Title and Description -->
+                        <div class="mb-4">
+                            <label for="title" class="block text-sm font-semibold text-gray-700">Title<span class="text-red-600">*</span></label>
+                            <input
+                                id="title"
+                                name="title"
+                                type="text"
+                                required
+                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                placeholder="Enter chart title"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="block text-sm font-semibold text-gray-700">Description</label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                placeholder="Enter chart description"
+                            ></textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="mt-6">
+                            <button
+                                type="submit"
+                                class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                            >
+                                Create Chart
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Wait for the DOM to be fully loaded before running the function
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if request.user.is_authenticated %}
+                {% if request.user == dashboard.user%}
+                    // Handle chart type change
+                    function handleChartTypeChange() {
+                        document.getElementById("xColumnDiv").style.display = "block";
+                        document.getElementById("yColumnDiv").style.display = "block";
+
+                        // Split the value into chart type and chart kind
+
+
+                        // Handle chart selection
+
+                    }
+
+                    // Bind the event handler to the chart type dropdown
+                    document.getElementById("chartType").addEventListener("change", handleChartTypeChange);
+
+                    // Handle file upload and validate CSV
+                    const csvFileInput = document.getElementById("csvFile");
+
+                    // Function to validate file and fetch columns
+                    function validateFileAndFetchColumns(event) {
+                        const fileInput = event.target;
+                        const file = fileInput.files[0];
+                        const fileErrorMessage = document.getElementById("fileErrorMessage");
+                        fileErrorMessage.style.display = "none"; // Hide error message
+                        const formData = new FormData();
+                        formData.append("main_file", file);
+
+                        // Send file to the backend for processing
+                        fetch("/api/upload_csv/", {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Clear previous options and populate x_column options with API response columns
+                            const xColumnSelect = document.getElementById("xColumn");
+                            xColumnSelect.innerHTML = ""; // Clear previous options
+                            const defaultXOption = document.createElement("option");
+                            defaultXOption.value = "";
+                            defaultXOption.textContent = "Select a column";
+                            xColumnSelect.appendChild(defaultXOption);
+                            Object.keys(data.data.columns).forEach(col => {
+                                const option = document.createElement("option");
+                                option.value = col;
+                                option.textContent = col;
+                                xColumnSelect.appendChild(option);
+                            });
+                            const yColumnSelect = document.getElementById("yColumn");
+                            yColumnSelect.innerHTML = ""; // Clear previous options
+                            const defaultYOption = document.createElement("option");
+                            defaultYOption.value = "";
+                            defaultYOption.textContent = "Default: Count";
+                            yColumnSelect.appendChild(defaultYOption);
+                            data.data.numeric.forEach(col => {
+                                const option = document.createElement("option");
+                                option.value = col;
+                                option.textContent = col;
+                                yColumnSelect.appendChild(option);
+                            });
+                        })
+                        .catch(error => {
+                            console.error("Error uploading CSV:", error);
+                        });
+                    }
+                    csvFileInput.addEventListener('change', validateFileAndFetchColumns);
+                
+                {% endif %}
+                
+                const likeBtn = document.getElementById('like-button');
+                const likesCountElement = document.getElementById('likes-count');
+                const likeIcon = likeBtn.querySelector('i');
+                const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+                // Dashboard ID dynamically
+                const dashboardId = '{{ dashboard.id }}';
+
+                likeBtn.addEventListener('click', function() {
+                    fetch('/api/like_dashboard/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken,
+                        },
+                        body: JSON.stringify({ dashboard_id: dashboardId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.is_liked) {
+                            // Change icon to solid thumbs-up (liked)
+                            likeIcon.classList.remove('fa-regular');
+                            likeIcon.classList.add('fa-solid');
+                        } else {
+                            // Change icon to regular thumbs-up (not liked)
+                            likeIcon.classList.remove('fa-solid');
+                            likeIcon.classList.add('fa-regular');
+                        }
+
+                        // Updating likes count
+                        likesCountElement.textContent = data.new_number_of_likes;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                });
+            {% endif %}
+        });
+    </script>
+{% endblock %}
