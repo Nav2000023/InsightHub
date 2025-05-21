@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-g0jd92i6^1gs^#@et4z(8m@)rge0kjrr0$q1xu#kbw$b#&7bn8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['insighthub-d5b6.onrender.com', 'localhost']
 
 
 # Application definition
