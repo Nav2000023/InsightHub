@@ -46,7 +46,7 @@
     <div class="my-button-contain flex flex-col justify-center text-center space-y-4">
         <div class="header-container relative">
             <div class="header font-bold text-4xl">Dashboard: <span class="text-blue-600">{{ dashboard.title }}</span></div>
-            <div class="like-info absolute right-10 top-50 bg-blue-100 border-1 border-blue-100 rounded-xl px-2">
+            <div class="like-info absolute right-10 top-10 bg-blue-100 border-1 border-blue-100 rounded-xl px-2">
                 {% if request.user.is_authenticated %}
                     <button id="like-button">
                         <i class="{% if is_liked %}fa-solid{% else %}fa-regular{% endif %} fa-thumbs-up like-logo"></i> 
